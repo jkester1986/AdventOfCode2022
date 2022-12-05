@@ -29,7 +29,6 @@ fs.readFile('Day3.txt', 'utf8', function (err, data) {
     for(i = 0; i <= length-3; i += 3) {
         let intersection1 = lines[i].split("").filter(char => lines[i+1].includes(char));
         let intersection2 = intersection1.filter(char => lines[i+2].includes(char));
-        console.log({intersection1, intersection2, thirdLine: lines[i+2]})
         badgePriorities += dictionary[intersection2[0]]
     }
 
