@@ -1,0 +1,8 @@
+{
+  "name": "Advent-of-Code-2022",
+  "version": "1.0.0",
+  "author": "Julia Kester <juliamkester@gmail.com>",
+  "dependencies": {
+    "lodash.get": "^4.4.2"
+  }
+}
