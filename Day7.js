@@ -1,5 +1,8 @@
 fs = require('fs');
 get = require("lodash.get")
+
+let fileSizes = [];
+
 fs.readFile('Day7.txt', 'utf8', function (err, data) {
   if (err) {
     return console.log(err);
@@ -35,9 +38,36 @@ fs.readFile('Day7.txt', 'utf8', function (err, data) {
       }
     }
     else if (match) {
-      folder[match[2]] = match[1];
+      folder[match[2]] = Number(match[1]);
     }
     // console.log({path, folder}, "\n")
   });
-  console.log(folders)
+  // console.log(folders)
+
+  getFolderSize(folders);
+  console.log({fileSizes})
+
 })
+
+function getFolderSize(folder) {
+  const folderContents = Object.keys(folder).map(key => folder[key]);
+  const innerFolders = folderContents.filter(content => content === "object");
+  const files = folderContents.filter(content => content !== "object");
+  let innerFolderSize = 0;
+  let filesSize = 0;
+
+  innerFolders.forEach(innerFolder => {
+    innerFolderSize += getFolderSize(innerFolder);
+  });
+
+  files.forEach(file => {
+    console.log({file})
+    filesSize += file;
+  });
+
+  console.log({innerFolderSize, filesSize})
+  
+  const tot = innerFolderSize + filesSize;
+  if (tot < 100000) fileSizes.push(tot);
+  return tot;
+}
