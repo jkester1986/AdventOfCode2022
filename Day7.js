@@ -2,6 +2,7 @@ fs = require('fs');
 get = require("lodash.get")
 
 let fileSizes = [];
+let currentSizeToDelete = 100000000000000000000;
 
 fs.readFile('Day7.txt', 'utf8', function (err, data) {
   if (err) {
@@ -40,34 +41,35 @@ fs.readFile('Day7.txt', 'utf8', function (err, data) {
     else if (match) {
       folder[match[2]] = Number(match[1]);
     }
-    // console.log({path, folder}, "\n")
   });
-  // console.log(folders)
 
-  getFolderSize(folders);
-  console.log({fileSizes})
+  const fullDirSize = getFolderSize(folders);
+  const sum = fileSizes.reduce((sum, a) => sum + a, 0);
+  console.log("P1:", sum)
+  getFolderSize(folders, 30000000 - (70000000 - fullDirSize));
+  console.log("P2:", currentSizeToDelete)
 
 })
 
-function getFolderSize(folder) {
+function getFolderSize(folder, sizeToDelete) {
   const folderContents = Object.keys(folder).map(key => folder[key]);
-  const innerFolders = folderContents.filter(content => content === "object");
-  const files = folderContents.filter(content => content !== "object");
+  const innerFolders = folderContents.filter(content => typeof content === "object");
+  const files = folderContents.filter(content => typeof content !== "object");
   let innerFolderSize = 0;
   let filesSize = 0;
 
   innerFolders.forEach(innerFolder => {
-    innerFolderSize += getFolderSize(innerFolder);
+    innerFolderSize += getFolderSize(innerFolder, sizeToDelete);
   });
 
   files.forEach(file => {
-    console.log({file})
     filesSize += file;
   });
 
-  console.log({innerFolderSize, filesSize})
-  
   const tot = innerFolderSize + filesSize;
-  if (tot < 100000) fileSizes.push(tot);
+  if (!sizeToDelete && tot < 100000) fileSizes.push(tot);
+  if (sizeToDelete) {
+    if (tot >= sizeToDelete && tot < currentSizeToDelete) currentSizeToDelete = tot;
+  }
   return tot;
 }
