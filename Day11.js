@@ -5,12 +5,12 @@ fs.readFile('Day11.txt', 'utf8', function (err, data) {
 	}
 	let monkeySetup = data.split('\n\n');
     let monkeys = [];
+    let modulo = 1;
 
-    monkeySetup.forEach((monkey, i) => {
+    monkeySetup.forEach((monkey) => {
         data = monkey.split("\n");
         items = data[1].match(/Starting\sitems:\s(.+)/)[1].replaceAll(",", "").split(" ").map(Number)
         operandAndVal = data[2].match(/old\s(.)\s(\d+)?/)
-        // console.log({operandAndVal})
         divBy = Number(data[3].match(/\s(\d+)$/)[1])
         trueTo = Number(data[4].match(/\s(\d+)$/)[1])
         falseTo = Number(data[5].match(/\s(\d+)$/)[1])
@@ -24,33 +24,25 @@ fs.readFile('Day11.txt', 'utf8', function (err, data) {
                 true: trueTo,
                 false: falseTo
             }
-        })
+        });
+        modulo *= divBy;
     })
 
     round = 0;
-    while(round < 20) {
+    while(round < 10000) {
         monkeys.forEach(({items, operand, increaseBy, test}, i) => {
             monkeys[i].itemsInspected += items.length;
             items.forEach(item => {
-                // P1
-                // item = Math.floor(eval(`${item}${operand}${increaseBy === "self" ? item : increaseBy}`)/3)
-                // P2
                 item = eval(`${item}${operand}${increaseBy === "self" ? item : increaseBy}`)
 
-                console.log({item});
-                // find the new monkey the item is going to
-                newMonkey = test[item%test.divBy === 0] // test[true || false]
-                monkeys[newMonkey].items.push(item);
+                newMonkey = test[item%test.divBy === 0]
+                // because future me will forget - the modulo of all the numbers mutiplied together will result in a remainder that will always give the right future remainder in future rounds
+                monkeys[newMonkey].items.push(item%modulo);
             })
             monkeys[i].items = [];
         })
         round++;
     }
-
-    // for some reason monkey 3 is missing 2 items but the others are correct with the example???
-    monkeys.forEach((monkey, i) => {
-        console.log(i, ":", monkey.itemsInspected)
-    })
 
     let inspected = monkeys.map(monkey => monkey.itemsInspected).sort((a, b) => b - a)
     console.log(inspected[0] * inspected[1])
