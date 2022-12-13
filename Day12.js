@@ -1,3 +1,4 @@
+// TODO: figure out how to have P2 run faster
 fs = require('fs');
 fs.readFile('Day12.txt', 'utf8', function (err, data) {
   if (err) {
@@ -32,7 +33,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
   });
 
 
-  function leastSteps(startingPos) {
+  function leastSteps(startingPos, additionalPruning) {
     const visited = new Set();
     const locationQueue = [];
   
@@ -76,7 +77,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
         const upPos = `${x},${y - 1}`;
         // console.log({upPos})
         const upLoc = map[upPos];
-        if (upLoc && ((upLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(upPos)) {
+        if (upLoc && ((upLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(upPos) && (!additionalPruning || !(allAs.includes(upPos)))) {
           // console.log({upLoc})
           allNewOptions.push({
             pos: upPos,
@@ -88,7 +89,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
         const downPos = `${x},${y + 1}`;
         // console.log({downPos});
         const downLoc = map[downPos];
-        if (downLoc && ((downLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(downPos)) {
+        if (downLoc && ((downLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(downPos) && (!additionalPruning || !(allAs.includes(downPos)))) {
           // console.log({ downLoc })
           allNewOptions.push({
             pos: downPos,
@@ -100,7 +101,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
         const leftPos = `${x - 1},${y}`;
         // console.log({leftPos})
         const leftLoc = map[leftPos];
-        if (leftLoc && ((leftLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(leftPos)) {
+        if (leftLoc && ((leftLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(leftPos) && (!additionalPruning || !(allAs.includes(leftPos)))) {
           // console.log({ leftLoc })
           allNewOptions.push({
             pos: leftPos,
@@ -112,7 +113,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
         const rightPos = `${x + 1},${y}`;
         // console.log({rightPos})
         const rightLoc = map[rightPos];
-        if (rightLoc && ((rightLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(rightPos)) {
+        if (rightLoc && ((rightLoc.val - val) <= 1 || ["S"].includes(char)) && !visited.has(rightPos) && (!additionalPruning || !(allAs.includes(rightPos)))) {
           // console.log({ rightLoc })
           allNewOptions.push({
             pos: rightPos,
@@ -136,7 +137,7 @@ fs.readFile('Day12.txt', 'utf8', function (err, data) {
 
   let lowest = 500;
   allAs.forEach(a => {
-    const stepCount = leastSteps(a);
+    const stepCount = leastSteps(a, true);
     if (stepCount < lowest) lowest = stepCount;
   });
 
